@@ -35,6 +35,7 @@ class ErrorInjectingGreeter(helloworld_pb2_grpc.GreeterServicer):
         context: grpc.aio.ServicerContext,
     ) -> helloworld_pb2.HelloReply:
         self._counter[context.peer()] += 1
+        await context.send_initial_metadata(grpc.aio.Metadata(("foo", "bar")))
         if self._counter[context.peer()] < 5:
             if random.random() < 0.75:
                 logging.info("Injecting error to RPC from %s", context.peer())
